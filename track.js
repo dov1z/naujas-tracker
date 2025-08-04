@@ -125,6 +125,14 @@ app.get('/track', async (req, res) => {
   }
 });
 
+const express = require('express');
+const app = express();
+const trackHandler = require('./track');
+
+const PORT = process.env.PORT || 3000;
+
+app.get('/track', trackHandler);
+
 app.listen(PORT, () => {
   console.log(`🚀 Serveris veikia ant porto ${PORT}`);
 });
