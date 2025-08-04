@@ -1,13 +1,14 @@
 const express = require('express');
 const app = express();
-const track = require('./track');
 
-app.get('/track', (req, res) => {
-  track(req, res);
-});
+// Importuojam track handlerį
+const trackHandler = require('./track');
 
+// Priskiriam endpoint'ą
+app.get('/track', trackHandler);
+
+// Naudojam dinaminį portą, kurį Render priskiria
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Serveris veikia ant porto ${PORT}`);
 });
-
