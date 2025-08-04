@@ -4,10 +4,6 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔐 Telegram duomenys
-const BOT_TOKEN = '8472507341:AAE4BmTUt7sOpovwsmLtl4IltNhBlHithzc';
-const CHAT_ID = '2143061691';
-
 // 🧠 Formatuoja datą pagal LT laiką
 function formatDate(date) {
   return date.toLocaleString('lt-LT', {
@@ -40,10 +36,9 @@ app.get('/track', async (req, res) => {
       siuntejas = 'nežinomas'
     } = req.query;
 
-    const headers = req.headers;
-    const userAgent = headers['user-agent'] || '';
-    const referer = headers['referer'] || '';
-    const ip = headers['x-forwarded-for'] || req.socket?.remoteAddress || 'no-ip';
+    const userAgent = req.headers['user-agent'] || 'no-agent';
+    const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'no-ip';
+    const referer = req.headers['referer'] || 'nėra';
 
     const openedAt = new Date();
 
@@ -91,26 +86,22 @@ app.get('/track', async (req, res) => {
 👤 Gavėjas: ${recipientName ? `${recipientName} (${recipient})` : recipient}  
 ✉️ Siuntėjas: ${extractName(siuntejas)}  
 📤 Išsiųsta: ${formatDate(sentAt)}  
-📥 Atidaryta: ${formatDate(openedAt)}  
-  
-📡 IP: ${ip}  
-🧭 Agentas: ${userAgent}`;
+📥 Atidaryta: ${formatDate(openedAt)}`;
     }
 
     console.log('📨 Telegram žinutė:', message);
 
-    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    await fetch(`https://api.telegram.org/bot8472507341:AAE4BmTUt7sOpovwsmLtl4IltNhBlHithzc/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id: CHAT_ID,
+        chat_id: '2143061691',
         text: message,
         parse_mode: 'Markdown'
       })
     });
 
-    const result = await response.json();
-    console.log('📦 Telegram atsakymas:', result);
+    console.log('✅ Telegram žinutė išsiųsta');
 
     res.setHeader('Content-Type', 'image/png');
     res.status(200).send(pixel);
