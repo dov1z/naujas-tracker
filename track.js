@@ -1,8 +1,12 @@
 const express = require('express');
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const fetch = require('node-fetch');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// 🔐 Telegram duomenys
+const BOT_TOKEN = '8472507341:AAE4BmTUt7sOpovwsmLtl4IltNhBlHithzc';
+const CHAT_ID = '2143061691';
 
 // 🧠 Formatuoja datą pagal LT laiką
 function formatDate(date) {
@@ -23,6 +27,15 @@ function extractName(emailOrName) {
     return emailOrName.split('@')[0].replace(/\./g, ' ').replace(/_/g, ' ');
   }
   return emailOrName;
+}
+
+// 🧠 Saugiai dekoduoja tekstą
+function safeDecode(text) {
+  try {
+    return decodeURIComponent(text);
+  } catch {
+    return text;
+  }
 }
 
 app.get('/track', async (req, res) => {
@@ -82,7 +95,7 @@ app.get('/track', async (req, res) => {
 ⏱️ Po: ${timeDiffText}  
 🆔 ID: ${id}  
   
-📄 Tema: ${decodeURIComponent(subject)}  
+📄 Tema: ${safeDecode(subject)}  
 👤 Gavėjas: ${recipientName ? `${recipientName} (${recipient})` : recipient}  
 ✉️ Siuntėjas: ${extractName(siuntejas)}  
 📤 Išsiųsta: ${formatDate(sentAt)}  
@@ -91,17 +104,18 @@ app.get('/track', async (req, res) => {
 
     console.log('📨 Telegram žinutė:', message);
 
-    await fetch(`https://api.telegram.org/bot8472507341:AAE4BmTUt7sOpovwsmLtl4IltNhBlHithzc/sendMessage`, {
+    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id: '2143061691',
+        chat_id: CHAT_ID,
         text: message,
         parse_mode: 'Markdown'
       })
     });
 
-    console.log('✅ Telegram žinutė išsiųsta');
+    const result = await response.json();
+    console.log('📦 Telegram atsakymas:', result);
 
     res.setHeader('Content-Type', 'image/png');
     res.status(200).send(pixel);
