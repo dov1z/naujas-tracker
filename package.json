@@ -1,11 +1,21 @@
 {
   "name": "pixel-tracker",
   "version": "1.0.0",
-  "main": "server.js",
+  "description": "Simple pixel tracking service with Telegram notifications",
+  "main": "track.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node track.js"
   },
+  "keywords": [
+    "pixel",
+    "tracker",
+    "telegram",
+    "express"
+  ],
+  "author": "Dovydas",
+  "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
   }
 }
