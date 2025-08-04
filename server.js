@@ -8,5 +8,6 @@ app.get('/track', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Serveris veikia ant http://localhost:${PORT}/track`);
+  console.log(`🚀 Serveris veikia ant porto ${PORT}`);
 });
+
